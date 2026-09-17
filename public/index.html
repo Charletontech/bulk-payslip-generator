@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>PaySlipr - Bulk Payslip Generator</title>
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#f8faf3", "surface-container-lowest": "#ffffff", "surface-container-low": "#f2f4ed", "surface-container": "#ecefe8", "surface-container-high": "#e7e9e2", "surface-container-highest": "#e1e3dc",
+            "on-surface": "#191c18", "on-surface-variant": "#444841",
+            "primary": "#55624d", "on-primary": "#ffffff", "primary-container": "#98a68e", "on-primary-container": "#2f3c29", "primary-fixed": "#d9e7cd", "on-primary-fixed": "#131e0e",
+            "secondary": "#755754", "on-secondary": "#ffffff", "secondary-container": "#fed7d2", "on-secondary-container": "#795b58",
+            "outline": "#757870", "outline-variant": "#c5c8be",
+          },
+          fontFamily: {
+            "headline": ["Manrope", "sans-serif"], "body": ["Plus Jakarta Sans", "sans-serif"], "label": ["Plus Jakarta Sans", "sans-serif"],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #f8faf3; color: #191c18; }
+    ::-webkit-scrollbar { display: none; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body class="font-body antialiased min-h-screen flex flex-col">
+
+  <header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]">
+    <div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-primary shadow-sm">
+          <span class="material-symbols-outlined text-2xl">receipt_long</span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5">
+            <span class="font-headline font-bold text-lg tracking-tight text-on-surface">PaySlipr</span>
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span>
+          </div>
+          <span class="text-xs font-label text-on-surface-variant font-medium tracking-wide">Bulk Generation Studio</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full pt-28 pb-20 bg-surface flex-1">
+    <div class="max-w-4xl mx-auto px-6 lg:px-12 flex flex-col gap-12">
+
+      <div class="flex flex-col items-center text-center gap-4">
+        <h1 class="font-headline text-3xl sm:text-4xl font-bold tracking-tight text-on-surface">Generate Payslips in Seconds</h1>
+        <p class="text-on-surface-variant text-sm sm:text-base leading-relaxed max-w-2xl">
+          Upload your payroll CSV, configure your company profile, and we'll automatically generate, validate, and package professional PDF payslips into a secure ZIP archive.
+        </p>
+      </div>
+
+      <!-- STEP 1: UPLOAD -->
+      <div id="step1" class="flex flex-col gap-6 relative">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline font-bold shadow-sm">1</div>
+          <h2 class="font-headline font-bold text-xl text-on-surface">Setup & Upload</h2>
+        </div>
+
+        <form id="uploadForm" class="p-8 rounded-[1.5rem] bg-surface-container-low flex flex-col gap-8 shadow-sm">
+          
+          <div>
+            <h3 class="font-headline font-bold text-lg text-on-surface mb-4">Company Profile & Meta</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div class="flex flex-col gap-2">
+                <label class="text-xs font-label font-bold uppercase text-on-surface-variant">Company Name</label>
+                <input type="text" id="companyName" name="companyName" placeholder="e.g. Zenith Technologies Ltd" class="p-4 rounded-xl bg-surface-container-lowest text-sm focus:outline-none focus:bg-primary-fixed/30 transition-colors shadow-sm" required />
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-xs font-label font-bold uppercase text-on-surface-variant">Company Address</label>
+                <input type="text" id="companyAddress" name="companyAddress" placeholder="e.g. Plot 14B Victoria Island" class="p-4 rounded-xl bg-surface-container-lowest text-sm focus:outline-none focus:bg-primary-fixed/30 transition-colors shadow-sm" />
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-xs font-label font-bold uppercase text-on-surface-variant">Contact Email</label>
+                <input type="email" id="contactEmail" name="contactEmail" placeholder="payroll@company.com" class="p-4 rounded-xl bg-surface-container-lowest text-sm focus:outline-none focus:bg-primary-fixed/30 transition-colors shadow-sm" />
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-xs font-label font-bold uppercase text-on-surface-variant">Company Logo (Optional)</label>
+                <input type="file" id="logoFile" name="logoFile" accept="image/*" class="hidden" />
+                <div id="logoDropZone" class="p-3.5 rounded-xl bg-surface-container-lowest text-sm flex items-center justify-between border border-dashed border-outline-variant/30 hover:bg-surface-container-highest transition-colors cursor-pointer">
+                  <span id="logoNameDisplay" class="text-on-surface-variant truncate mr-2">Upload Logo Image (Max 10MB)</span>
+                  <span class="material-symbols-outlined text-primary shrink-0">upload</span>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-xs font-label font-bold uppercase text-on-surface-variant">Pay Period (Fallback)</label>
+                <input type="text" id="payPeriod" name="payPeriod" placeholder="e.g. August 2026" class="p-4 rounded-xl bg-surface-container-lowest text-sm focus:outline-none focus:bg-primary-fixed/30 transition-colors shadow-sm" />
+              </div>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-4 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">info</span>
+              Company details are stored securely in your browser for 1 hour.
+            </p>
+          </div>
+
+          <div class="w-full h-px bg-surface-container-highest"></div>
+
+          <div>
+            <h3 class="font-headline font-bold text-lg text-on-surface mb-4">Payroll Data (CSV)</h3>
+            
+            <input type="file" id="csvFile" name="csvFile" accept=".csv" class="hidden" required />
+            <div id="dropZone" class="w-full rounded-[1.5rem] bg-surface-container-lowest p-10 flex flex-col items-center justify-center gap-4 border-2 border-dashed border-outline-variant/30 hover:border-primary/50 transition-colors cursor-pointer group">
+              <div class="w-16 h-16 rounded-full bg-primary-fixed/40 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-3xl">csv</span>
+              </div>
+              <div class="text-center">
+                <h4 class="font-headline font-bold text-base text-on-surface">Click to browse or drag & drop CSV</h4>
+                <p id="fileNameDisplay" class="text-sm text-on-surface-variant mt-1">No file selected (Max 10MB)</p>
+              </div>
+            </div>
+          </div>
+          
+          <button type="submit" id="btnUpload" class="self-end px-8 py-4 rounded-xl bg-primary text-on-primary font-headline font-bold text-sm hover:bg-primary-container transition-all flex items-center gap-2 shadow-sm disabled:opacity-50">
+            <span>Proceed to Validation</span>
+            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+          </button>
+          <div id="uploadError" class="text-secondary text-sm hidden self-end mt-2"></div>
+        </form>
+      </div>
+
+      <!-- STEP 2: SCHEMA MAPPING -->
+      <div id="stepMapping" class="hidden flex flex-col gap-6 relative mt-8">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline font-bold shadow-sm">2</div>
+          <h2 class="font-headline font-bold text-xl text-on-surface">Map Columns</h2>
+        </div>
+        <div class="p-8 rounded-[1.5rem] bg-surface-container-low flex flex-col gap-6 shadow-sm">
+          <p class="text-sm text-on-surface-variant">Review the automatically guessed columns from your spreadsheet. Ensure exactly one column is mapped to Employee ID.</p>
+          <div class="grid grid-cols-1 gap-4" id="mappingContainer">
+            <!-- Dynamically injected mapping rows -->
+          </div>
+          <div class="flex justify-end gap-3 mt-4">
+            <button id="btnCancelMapping" class="px-6 py-3 rounded-full font-label font-bold text-sm bg-surface-container-highest text-on-surface hover:bg-outline-variant/20 transition-colors">
+              Cancel
+            </button>
+            <button id="btnConfirmMapping" class="px-6 py-3 rounded-full font-label font-bold text-sm bg-primary text-on-primary hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
+              <span>Confirm Mapping</span>
+              <span class="material-symbols-outlined text-sm">check</span>
+            </button>
+          </div>
+          <div id="mappingError" class="text-secondary text-sm hidden self-end"></div>
+        </div>
+      </div>
+
+      <!-- STEP 3: VALIDATION -->
+      <div id="step2" class="hidden flex flex-col gap-6 relative mt-8">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline font-bold shadow-sm">3</div>
+          <h2 class="font-headline font-bold text-xl text-on-surface">Data Validation</h2>
+        </div>
+
+        <div class="p-8 rounded-[1.5rem] bg-surface-container-low flex flex-col gap-6 shadow-sm">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="font-headline font-bold text-lg text-on-surface">Validation Summary</h3>
+              <p class="text-sm text-on-surface-variant mt-1" id="valTotalText">Found 0 rows</p>
+            </div>
+            <span id="valExceptionBadge" class="hidden px-4 py-2 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold font-label">
+              Exceptions Found
+            </span>
+            <span id="valSuccessBadge" class="hidden px-4 py-2 rounded-full bg-primary-fixed text-on-primary-fixed text-xs font-bold font-label">
+              100% Valid
+            </span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4">
+            <div class="p-4 rounded-xl bg-surface-container-lowest flex flex-col">
+              <span class="text-[11px] font-label uppercase font-bold text-on-surface-variant">Rows Parsed</span>
+              <span id="statParsed" class="font-headline font-extrabold text-2xl text-on-surface mt-1">0</span>
+            </div>
+            <div class="p-4 rounded-xl bg-surface-container-lowest flex flex-col">
+              <span class="text-[11px] font-label uppercase font-bold text-primary">Valid Records</span>
+              <span id="statValid" class="font-headline font-extrabold text-2xl text-primary mt-1">0</span>
+            </div>
+            <div id="statInvalidContainer" class="p-4 rounded-xl bg-secondary-container/50 flex flex-col border border-secondary-container">
+              <span class="text-[11px] font-label uppercase font-bold text-on-secondary-container">Invalid Rows</span>
+              <span id="statInvalid" class="font-headline font-extrabold text-2xl text-secondary mt-1">0</span>
+            </div>
+          </div>
+
+          <!-- Error Log -->
+          <div id="errorLogContainer" class="hidden p-5 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-3">
+            <span class="font-headline font-bold text-xs uppercase tracking-wide text-secondary flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-base">warning</span>
+              Error Log (Skipped during generation)
+            </span>
+            <div id="errorList" class="space-y-2 max-h-60 overflow-y-auto pr-2">
+              <!-- Error items injected here -->
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row items-center gap-4 mt-4">
+            <button id="btnGenerate" class="w-full sm:w-auto flex-1 py-4 px-6 rounded-xl bg-primary text-on-primary font-headline font-bold text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-sm">
+              <span class="material-symbols-outlined text-lg">play_arrow</span>
+              <span id="btnGenerateText">Continue to Generation</span>
+            </button>
+            <button id="btnCancel" class="w-full sm:w-auto py-4 px-6 rounded-xl bg-surface-container-highest text-on-surface hover:bg-surface-container transition-all font-headline font-semibold text-sm flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-lg">close</span>
+              <span>Cancel & Re-upload</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: GENERATION -->
+      <div id="step3" class="hidden flex flex-col gap-6 relative mt-8">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline font-bold shadow-sm">4</div>
+          <h2 class="font-headline font-bold text-xl text-on-surface">Generation & Delivery</h2>
+        </div>
+
+        <div class="p-8 rounded-[1.5rem] bg-surface-container-low flex flex-col gap-8 shadow-sm">
+          
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <h3 id="progressTitle" class="font-headline font-bold text-base text-on-surface">Generating PDF Payslips...</h3>
+              <span id="progressText" class="font-headline font-bold text-primary text-sm">0%</span>
+            </div>
+            <div class="w-full h-3 rounded-full bg-surface-container-highest overflow-hidden">
+              <div id="progressBar" class="h-full bg-primary transition-all duration-300" style="width: 0%;"></div>
+            </div>
+            <p id="progressDetail" class="text-xs text-on-surface-variant font-mono mt-1">Starting engine...</p>
+          </div>
+
+          <div class="w-full h-px bg-surface-container-highest"></div>
+
+          <!-- Success & Download -->
+          <div id="downloadSection" class="hidden flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 rounded-xl bg-surface-container-lowest shadow-sm border border-primary-fixed">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-2xl">check_circle</span>
+              </div>
+              <div>
+                <h4 class="font-headline font-bold text-base text-on-surface">Generation Complete</h4>
+                <p id="zipNameText" class="text-xs text-on-surface-variant mt-1">ZIP Archive Ready</p>
+              </div>
+            </div>
+            <a id="btnDownload" href="#" class="py-3 px-6 rounded-xl bg-primary text-on-primary font-headline font-bold text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-sm">
+              <span class="material-symbols-outlined text-lg">download</span>
+              <span>Download ZIP</span>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-secondary-container text-on-secondary-container shadow-lg shadow-secondary/20 pointer-events-none">
+    <span class="material-symbols-outlined text-secondary">error</span>
+    <span id="toastMessage" class="text-sm font-semibold font-body"></span>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
